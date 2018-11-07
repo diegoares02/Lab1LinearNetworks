@@ -1,6 +1,5 @@
 K=@(n)(sqrt(1-(1/n^2)));
-%Left scroll to get the same size of vectors
-leftscroll = @(p1,p2) [zeros(1,max(0,numel(p2) - numel(p1))),p1];
+leftpadz = @(p1,p2) [zeros(1,max(0,numel(p2) - numel(p1))),p1];
 
 R=[1.3217 1.8082];%W Transmission zero roots
 N=4;%Order of the filter
@@ -23,16 +22,16 @@ aux_v=v;
 for m=2:numel(R)
     p_u=K(R(m))*(conv([1 0 -1],aux_v));
     p_v=conv([1 0],aux_v);
-    u=leftscroll(conv([1 0],aux_u),p_u)-leftscroll(aux_u/R(m),p_u)+p_u;
-    v=p_v-leftscroll(aux_v/R(m),p_v)+leftscroll(K(R(m))*aux_u,p_v);
+    u=leftpadz(conv([1 0],aux_u),p_u)-leftpadz(aux_u/R(m),p_u)+p_u;
+    v=p_v-leftpadz(aux_v/R(m),p_v)+leftpadz(K(R(m))*aux_u,p_v);
     aux_u=u;
     aux_v=v;
 end
 for n=1:N-numel(R)
     p_u=(conv([1 0 -1],aux_v));
     p_v=conv([1 0],aux_v);
-    u=leftscroll(conv([1 0],aux_u),p_u)+p_u;
-    v=p_v+leftscroll(aux_u,p_v);
+    u=leftpadz(conv([1 0],aux_u),p_u)+p_u;
+    v=p_v+leftpadz(aux_u,p_v);
     aux_u=u;
     aux_v=v;
 end
@@ -54,7 +53,7 @@ epsilon_r=1;
 epsilon=sqrt(10^(RL/10))^(-1)*p_sum/u_sum;
 
 %Calculo E(w)
-E=leftscroll((pw/epsilon),u) - 1i*u;
+E=leftpadz((pw/epsilon),u) - 1i*u;
 Er=roots(E);%roots of E(w)
 %for n=1:numel(Er)
 %    if imag(Er(n))>0
